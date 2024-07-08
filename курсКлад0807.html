@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблицы курсов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .course {
+            margin-bottom: 40px;
+        }
+
+        .course-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .table-wrapper {
+            border: 1px solid #ddd;
+            max-height: 200px; /* Высота для 4 строк + заголовок */
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: #f2f2f2;
+            z-index: 1;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tfoot {
+            position: sticky;
+            bottom: 0;
+            background-color: #f2f2f2;
+            z-index: 1;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Курсы</h1>
+        <div class="course-container">
+            <div class="course">
+                <h2>Курс Алла</h2>
+                <div class="table-wrapper">
+                    <table id="courseTableAlla">
+                        <thead>
+                            <tr>
+                                <th>Урок</th>
+                                <th>Дата</th>
+                                <th>Сделан</th>
+                                <th>Оплачен</th>
+                                <th>Долг</th>
+                                <th>Общий</th>
+                            </tr>
+                        </thead>
+                        <tbody id="courseBodyAlla">
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>Итого:</td>
+                                <td></td>
+                                <td id="totalLessonsAlla">0</td>
+                                <td id="totalPaidAlla">0</td>
+                                <td id="totalDebtAlla">0 ֏</td>
+                                <td id="totalSumAlla">0 ֏</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="button-container">
+                    <button onclick="addLesson('Alla')">Добавить урок</button>
+                </div>
+            </div>
+            <div class="course">
+                <h2>Курс Лианна</h2>
+                <div class="table-wrapper">
+                    <table id="courseTableLianna">
+                        <thead>
+                            <tr>
+                                <th>Урок</th>
+                                <th>Дата</th>
+                                <th>Сделан</th>
+                                <th>Оплачен</th>
+                                <th>Долг</th>
+                                <th>Общий</th>
+                            </tr>
+                        </thead>
+                        <tbody id="courseBodyLianna">
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>Итого:</td>
+                                <td></td>
+                                <td id="totalLessonsLianna">0</td>
+                                <td id="totalPaidLianna">0</td>
+                                <td id="totalDebtLianna">0 ֏</td>
+                                <td id="totalSumLianna">0 ֏</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="button-container">
+                    <button onclick="addLesson('Lianna')">Добавить урок</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const lessonCounts = { Alla: 0, Lianna: 0 };
+
+        function addLesson(course) {
+            const tbody = document.getElementById(`courseBody${course}`);
+            lessonCounts[course]++;
+
+            const row = tbody.insertRow();
+
+            const currentDate = new Date().toLocaleDateString('ru-RU');
+
+            row.innerHTML = `
+                <td>Урок № ${lessonCounts[course]}</td>
+                <td>${currentDate}</td>
+                <td><input type="checkbox" onchange="updateTotals('${course}')"></td>
+                <td><input type="checkbox" onchange="updateTotals('${course}')"></td>
+                <td>0 ֏</td>
+                <td>0 ֏</td>
+            `;
+
+            updateTotals(course);
+
+            row.scrollIntoView({ behavior: "smooth", block: "end" });
+        }
+
+        function updateTotals(course) {
+            const rows = document.getElementById(`courseBody${course}`).rows;
+            let totalLessons = 0;
+            let totalPaid = 0;
+            let totalDebt = 0;
+            let totalSum = 0;
+
+            for (let row of rows) {
+                const isDone = row.cells[2].querySelector('input').checked;
+                const isPaid = row.cells[3].querySelector('input').checked;
+
+                if (isDone) {
+                    totalLessons++;
+                    totalSum += 6000;
+
+                    if (!isPaid) {
+                        totalDebt += 6000;
+                    } else {
+                        totalPaid++;
+                    }
+                }
+
+                row.cells[4].textContent = isDone && !isPaid ? '6000 ֏' : '0 ֏';
+                row.cells[5].textContent = isDone ? '6000 ֏' : '0 ֏';
+            }
+
+            document.getElementById(`totalLessons${course}`).textContent = totalLessons;
+            document.getElementById(`totalPaid${course}`).textContent = totalPaid;
+            document.getElementById(`totalDebt${course}`).textContent = totalDebt + ' ֏';
+            document.getElementById(`totalSum${course}`).textContent = totalSum + ' ֏';
+        }
+
+        addLesson('Alla');
+        addLesson('Lianna');
+    </script>
+</body>
+
+</html>
